@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Таблица умножения</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f4ff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.10);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: .95rem;
+      margin-bottom: 32px;
+    }
+
+    /* --- Setup screen --- */
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .range-row label { color: #444; font-size: .95rem; white-space: nowrap; }
+
+    .range-row input[type="number"] {
+      width: 70px;
+      padding: 10px 12px;
+      border: 2px solid #d0d7f5;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      text-align: center;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .range-row input[type="number"]:focus { border-color: #4361ee; }
+
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #4361ee;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .btn-primary:hover { background: #3451d1; }
+    .btn-primary:active { transform: scale(.97); }
+
+    .error-msg {
+      color: #e63946;
+      font-size: .88rem;
+      text-align: center;
+      margin-top: -16px;
+      margin-bottom: 16px;
+      min-height: 20px;
+    }
+
+    /* --- Quiz screen --- */
+    #quiz-screen { display: none; }
+
+    .progress-bar-wrap {
+      height: 8px;
+      background: #e8ecff;
+      border-radius: 99px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: #4361ee;
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+
+    .progress-label {
+      text-align: center;
+      font-size: .85rem;
+      color: #888;
+      margin-bottom: 28px;
+      margin-top: -18px;
+    }
+
+    .question {
+      text-align: center;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 36px;
+      letter-spacing: .02em;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .opt-btn {
+      padding: 18px 8px;
+      border: 2px solid #d0d7f5;
+      background: #f7f9ff;
+      border-radius: 14px;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, transform .1s;
+    }
+    .opt-btn:hover:not(:disabled) { background: #eef0ff; border-color: #4361ee; }
+    .opt-btn:active:not(:disabled) { transform: scale(.95); }
+    .opt-btn.correct { background: #d4f5e2; border-color: #2dc653; color: #1a6335; }
+    .opt-btn.wrong   { background: #fde8ea; border-color: #e63946; color: #9b1c24; }
+    .opt-btn:disabled { cursor: default; opacity: .85; }
+
+    .feedback {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      min-height: 28px;
+      margin-bottom: 8px;
+      transition: opacity .2s;
+    }
+    .feedback.ok  { color: #2dc653; }
+    .feedback.err { color: #e63946; }
+
+    /* --- Results screen --- */
+    #results-screen { display: none; }
+
+    .score-big {
+      text-align: center;
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #4361ee;
+      margin: 16px 0 8px;
+    }
+    .score-sub {
+      text-align: center;
+      color: #555;
+      font-size: 1rem;
+      margin-bottom: 32px;
+    }
+
+    .mistakes-list {
+      background: #fde8ea;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 28px;
+    }
+    .mistakes-list h3 {
+      font-size: .9rem;
+      color: #9b1c24;
+      margin-bottom: 10px;
+    }
+    .mistakes-list li {
+      list-style: none;
+      font-size: .95rem;
+      color: #700;
+      padding: 3px 0;
+    }
+    .mistakes-list li span { font-weight: 700; }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-secondary {
+      flex: 1;
+      padding: 13px;
+      background: #f0f4ff;
+      color: #4361ee;
+      border: 2px solid #d0d7f5;
+      border-radius: 12px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-secondary:hover { background: #e0e8ff; }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Setup -->
+  <div id="setup-screen">
+    <h1>✖️ Таблица умножения</h1>
+    <p class="subtitle">Тренируйся и запоминай!</p>
+
+    <div class="range-row">
+      <label>с</label>
+      <input type="number" id="from" value="2" min="2" max="9" />
+      <label>по</label>
+      <input type="number" id="to"   value="9" min="2" max="9" />
+    </div>
+    <p class="error-msg" id="setup-error"></p>
+
+    <div class="range-row" style="margin-bottom:20px; flex-wrap:wrap;">
+      <label style="white-space:nowrap;">Вопросов:</label>
+      <select id="count-select" style="padding:10px 14px;border:2px solid #d0d7f5;border-radius:10px;font-size:1rem;outline:none;">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="30">30</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" onclick="startQuiz()">Начать</button>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quiz-screen">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <p class="progress-label" id="progress-label">1 / 20</p>
+
+    <div class="question" id="question-text">5 × 3 = ?</div>
+
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="results-screen">
+    <h1>Результат</h1>
+    <div class="score-big" id="score-big"></div>
+    <p class="score-sub"  id="score-sub"></p>
+    <div class="mistakes-list" id="mistakes-block" style="display:none">
+      <h3>Ошибки:</h3>
+      <ul id="mistakes-ul"></ul>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="retryMistakes()" id="btn-retry-mistakes" style="display:none">Повторить ошибки</button>
+      <button class="btn-primary"   onclick="backToSetup()" style="flex:1">Заново</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let questions = [];
+  let current = 0;
+  let correct = 0;
+  let mistakes = [];
+  let answered = false;
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function generateQuestions(from, to, count) {
+    const all = [];
+    for (let a = from; a <= to; a++) {
+      for (let b = 2; b <= 9; b++) {
+        all.push({ a, b, answer: a * b });
+      }
+    }
+    shuffle(all);
+    const selected = [];
+    for (let i = 0; i < count; i++) {
+      selected.push(all[i % all.length]);
+    }
+    return selected;
+  }
+
+  function wrongOptions(answer) {
+    const pool = new Set();
+    const deltas = [-answer + 2, -8, -4, -2, 2, 4, 8, answer - 2].filter(d => answer + d > 0 && answer + d !== answer);
+    for (const d of deltas) pool.add(answer + d);
+    // also add ±1 * nearby
+    for (let d = 1; pool.size < 10; d++) {
+      if (answer - d > 0) pool.add(answer - d);
+      pool.add(answer + d);
+    }
+    pool.delete(answer);
+    const arr = shuffle([...pool]);
+    return arr.slice(0, 2);
+  }
+
+  function startQuiz() {
+    const from = parseInt(document.getElementById('from').value);
+    const to   = parseInt(document.getElementById('to').value);
+    const count = parseInt(document.getElementById('count-select').value);
+    const err = document.getElementById('setup-error');
+
+    if (isNaN(from) || isNaN(to) || from < 2 || to > 9) {
+      err.textContent = 'Диапазон должен быть от 2 до 9.'; return;
+    }
+    if (from > to) {
+      err.textContent = '"С" не может быть больше "по".'; return;
+    }
+    err.textContent = '';
+
+    questions = generateQuestions(from, to, count);
+    current = 0; correct = 0; mistakes = [];
+
+    document.getElementById('setup-screen').style.display  = 'none';
+    document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display    = 'block';
+
+    showQuestion();
+  }
+
+  function showQuestion() {
+    answered = false;
+    const q = questions[current];
+    const total = questions.length;
+
+    document.getElementById('question-text').textContent = `${q.a} × ${q.b} = ?`;
+    document.getElementById('progress-label').textContent = `${current + 1} / ${total}`;
+    document.getElementById('progress-fill').style.width = `${(current / total) * 100}%`;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+
+    const wrongs = wrongOptions(q.answer);
+    const opts = shuffle([q.answer, ...wrongs]);
+
+    const container = document.getElementById('options');
+    container.innerHTML = '';
+    for (const val of opts) {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.textContent = val;
+      btn.onclick = () => pick(btn, val, q);
+      container.appendChild(btn);
+    }
+  }
+
+  function pick(btn, chosen, q) {
+    if (answered) return;
+    answered = true;
+
+    const allBtns = document.querySelectorAll('.opt-btn');
+    allBtns.forEach(b => b.disabled = true);
+
+    const fb = document.getElementById('feedback');
+    if (chosen === q.answer) {
+      btn.classList.add('correct');
+      fb.textContent = 'Верно! 🎉';
+      fb.className = 'feedback ok';
+      correct++;
+    } else {
+      btn.classList.add('wrong');
+      fb.textContent = `Неверно. Правильный ответ: ${q.answer}`;
+      fb.className = 'feedback err';
+      mistakes.push(q);
+      // highlight correct
+      allBtns.forEach(b => { if (+b.textContent === q.answer) b.classList.add('correct'); });
+    }
+
+    setTimeout(nextQuestion, 900);
+  }
+
+  function nextQuestion() {
+    current++;
+    if (current >= questions.length) {
+      showResults();
+    } else {
+      showQuestion();
+    }
+  }
+
+  function showResults() {
+    document.getElementById('quiz-screen').style.display    = 'none';
+    document.getElementById('results-screen').style.display = 'block';
+
+    const total = questions.length;
+    const pct = Math.round((correct / total) * 100);
+
+    document.getElementById('score-big').textContent = `${correct} / ${total}`;
+    let msg = pct === 100 ? '🏆 Отлично! Все верно!' : pct >= 80 ? '👍 Хороший результат!' : pct >= 50 ? '📚 Продолжай тренироваться!' : '💪 Нужно больше практики!';
+    document.getElementById('score-sub').textContent = msg;
+
+    const mb = document.getElementById('mistakes-block');
+    const retryBtn = document.getElementById('btn-retry-mistakes');
+    if (mistakes.length > 0) {
+      mb.style.display = 'block';
+      retryBtn.style.display = 'block';
+      const ul = document.getElementById('mistakes-ul');
+      ul.innerHTML = '';
+      const unique = [...new Map(mistakes.map(m => [`${m.a}x${m.b}`, m])).values()];
+      for (const m of unique) {
+        const li = document.createElement('li');
+        li.innerHTML = `${m.a} × ${m.b} = <span>${m.answer}</span>`;
+        ul.appendChild(li);
+      }
+    } else {
+      mb.style.display = 'none';
+      retryBtn.style.display = 'none';
+    }
+  }
+
+  function retryMistakes() {
+    if (!mistakes.length) return;
+    questions = shuffle([...mistakes]);
+    current = 0; correct = 0; mistakes = [];
+    document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display    = 'block';
+    showQuestion();
+  }
+
+  function backToSetup() {
+    document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display   = 'block';
+  }
+</script>
+</body>
+</html>
