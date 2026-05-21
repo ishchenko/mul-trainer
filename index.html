@@ -40,7 +40,7 @@
       margin-bottom: 32px;
     }
 
-    /* --- Setup screen --- */
+    /* --- Setup --- */
     .range-row {
       display: flex;
       align-items: center;
@@ -48,9 +48,7 @@
       justify-content: center;
       margin-bottom: 28px;
     }
-
     .range-row label { color: #444; font-size: .95rem; white-space: nowrap; }
-
     .range-row input[type="number"] {
       width: 70px;
       padding: 10px 12px;
@@ -76,7 +74,7 @@
       cursor: pointer;
       transition: background .2s, transform .1s;
     }
-    .btn-primary:hover { background: #3451d1; }
+    .btn-primary:hover  { background: #3451d1; }
     .btn-primary:active { transform: scale(.97); }
 
     .error-msg {
@@ -88,7 +86,7 @@
       min-height: 20px;
     }
 
-    /* --- Quiz screen --- */
+    /* --- Quiz --- */
     #quiz-screen { display: none; }
 
     .progress-bar-wrap {
@@ -104,7 +102,6 @@
       border-radius: 99px;
       transition: width .4s ease;
     }
-
     .progress-label {
       text-align: center;
       font-size: .85rem;
@@ -118,46 +115,87 @@
       font-size: 2.4rem;
       font-weight: 700;
       color: #1a1a2e;
-      margin-bottom: 36px;
+      margin-bottom: 28px;
       letter-spacing: .02em;
     }
 
-    .options {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 24px;
+    /* Decomposition */
+    .decomp {
+      margin-bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
-
-    .opt-btn {
-      padding: 18px 8px;
-      border: 2px solid #d0d7f5;
-      background: #f7f9ff;
-      border-radius: 14px;
-      font-size: 1.35rem;
+    .decomp-step {
+      font-size: 1.3rem;
       font-weight: 600;
-      color: #1a1a2e;
-      cursor: pointer;
-      transition: background .15s, border-color .15s, transform .1s;
-    }
-    .opt-btn:hover:not(:disabled) { background: #eef0ff; border-color: #4361ee; }
-    .opt-btn:active:not(:disabled) { transform: scale(.95); }
-    .opt-btn.correct { background: #d4f5e2; border-color: #2dc653; color: #1a6335; }
-    .opt-btn.wrong   { background: #fde8ea; border-color: #e63946; color: #9b1c24; }
-    .opt-btn:disabled { cursor: default; opacity: .85; }
-
-    .feedback {
+      color: #444;
       text-align: center;
-      font-size: 1rem;
-      font-weight: 600;
-      min-height: 28px;
-      margin-bottom: 8px;
-      transition: opacity .2s;
+      line-height: 1.5;
     }
-    .feedback.ok  { color: #2dc653; }
-    .feedback.err { color: #e63946; }
+    .decomp-step.first { color: #1a1a2e; }
 
-    /* --- Results screen --- */
+    .answer-pill {
+      display: inline-block;
+      background: #eef0ff;
+      border: 2px dashed #4361ee;
+      border-radius: 10px;
+      padding: 4px 24px;
+      cursor: pointer;
+      color: #4361ee;
+      font-size: 1.4rem;
+      font-weight: 700;
+      transition: background .15s, transform .1s;
+      user-select: none;
+    }
+    .answer-pill:hover  { background: #dde2ff; }
+    .answer-pill:active { transform: scale(.93); }
+    .answer-pill.revealed {
+      background: #d4f5e2;
+      border: 2px solid #2dc653;
+      color: #1a6335;
+      cursor: default;
+    }
+
+    /* Self-check buttons */
+    .self-check {
+      display: none;
+      gap: 12px;
+    }
+    .self-check.visible { display: flex; }
+
+    .btn-knew {
+      flex: 1;
+      padding: 14px;
+      background: #d4f5e2;
+      border: 2px solid #2dc653;
+      border-radius: 12px;
+      font-size: .95rem;
+      font-weight: 700;
+      color: #1a6335;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+    .btn-knew:hover  { background: #b5edcb; }
+    .btn-knew:active { transform: scale(.96); }
+
+    .btn-didnt {
+      flex: 1;
+      padding: 14px;
+      background: #fde8ea;
+      border: 2px solid #e63946;
+      border-radius: 12px;
+      font-size: .95rem;
+      font-weight: 700;
+      color: #9b1c24;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+    .btn-didnt:hover  { background: #f9cdd0; }
+    .btn-didnt:active { transform: scale(.96); }
+
+    /* --- Results --- */
     #results-screen { display: none; }
 
     .score-big {
@@ -193,10 +231,7 @@
     }
     .mistakes-list li span { font-weight: 700; }
 
-    .btn-row {
-      display: flex;
-      gap: 10px;
-    }
+    .btn-row { display: flex; gap: 10px; }
     .btn-secondary {
       flex: 1;
       padding: 13px;
@@ -248,10 +283,14 @@
     </div>
     <p class="progress-label" id="progress-label">1 / 20</p>
 
-    <div class="question" id="question-text">5 × 3 = ?</div>
+    <div class="question" id="question-text"></div>
 
-    <div class="options" id="options"></div>
-    <div class="feedback" id="feedback"></div>
+    <div class="decomp" id="decomp"></div>
+
+    <div class="self-check" id="self-check">
+      <button class="btn-knew"  onclick="selfCheck(true)">✓ Знал</button>
+      <button class="btn-didnt" onclick="selfCheck(false)">✗ Не знал</button>
+    </div>
   </div>
 
   <!-- Results -->
@@ -260,11 +299,11 @@
     <div class="score-big" id="score-big"></div>
     <p class="score-sub"  id="score-sub"></p>
     <div class="mistakes-list" id="mistakes-block" style="display:none">
-      <h3>Ошибки:</h3>
+      <h3>Не знал:</h3>
       <ul id="mistakes-ul"></ul>
     </div>
     <div class="btn-row">
-      <button class="btn-secondary" onclick="retryMistakes()" id="btn-retry-mistakes" style="display:none">Повторить ошибки</button>
+      <button class="btn-secondary" onclick="retryMistakes()" id="btn-retry" style="display:none">Повторить</button>
       <button class="btn-primary"   onclick="backToSetup()" style="flex:1">Заново</button>
     </div>
   </div>
@@ -276,7 +315,6 @@
   let current = 0;
   let correct = 0;
   let mistakes = [];
-  let answered = false;
 
   function shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -295,31 +333,33 @@
     }
     shuffle(all);
     const selected = [];
-    for (let i = 0; i < count; i++) {
-      selected.push(all[i % all.length]);
-    }
+    for (let i = 0; i < count; i++) selected.push(all[i % all.length]);
     return selected;
   }
 
-  function wrongOptions(answer) {
-    const pool = new Set();
-    const deltas = [-answer + 2, -8, -4, -2, 2, 4, 8, answer - 2].filter(d => answer + d > 0 && answer + d !== answer);
-    for (const d of deltas) pool.add(answer + d);
-    // also add ±1 * nearby
-    for (let d = 1; pool.size < 10; d++) {
-      if (answer - d > 0) pool.add(answer - d);
-      pool.add(answer + d);
+  // Returns array of arrays, each array is a list of addends at that step.
+  // E.g. 6×4 → [[6,6,6,6], [12,12], [24]]
+  function decompositionSteps(a, b) {
+    const num   = Math.max(a, b);
+    const count = Math.min(a, b);
+    let current = Array(count).fill(num);
+    const steps = [current.slice()];
+    while (current.length > 1) {
+      const next = [];
+      for (let i = 0; i < current.length; i += 2) {
+        next.push(i + 1 < current.length ? current[i] + current[i + 1] : current[i]);
+      }
+      current = next;
+      steps.push(current.slice());
     }
-    pool.delete(answer);
-    const arr = shuffle([...pool]);
-    return arr.slice(0, 2);
+    return steps;
   }
 
   function startQuiz() {
-    const from = parseInt(document.getElementById('from').value);
-    const to   = parseInt(document.getElementById('to').value);
+    const from  = parseInt(document.getElementById('from').value);
+    const to    = parseInt(document.getElementById('to').value);
     const count = parseInt(document.getElementById('count-select').value);
-    const err = document.getElementById('setup-error');
+    const err   = document.getElementById('setup-error');
 
     if (isNaN(from) || isNaN(to) || from < 2 || to > 9) {
       err.textContent = 'Диапазон должен быть от 2 до 9.'; return;
@@ -332,70 +372,59 @@
     questions = generateQuestions(from, to, count);
     current = 0; correct = 0; mistakes = [];
 
-    document.getElementById('setup-screen').style.display  = 'none';
+    document.getElementById('setup-screen').style.display   = 'none';
     document.getElementById('results-screen').style.display = 'none';
     document.getElementById('quiz-screen').style.display    = 'block';
-
     showQuestion();
   }
 
   function showQuestion() {
-    answered = false;
-    const q = questions[current];
+    const q     = questions[current];
     const total = questions.length;
 
     document.getElementById('question-text').textContent = `${q.a} × ${q.b} = ?`;
     document.getElementById('progress-label').textContent = `${current + 1} / ${total}`;
     document.getElementById('progress-fill').style.width = `${(current / total) * 100}%`;
-    document.getElementById('feedback').textContent = '';
-    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('self-check').classList.remove('visible');
 
-    const wrongs = wrongOptions(q.answer);
-    const opts = shuffle([q.answer, ...wrongs]);
+    const steps  = decompositionSteps(q.a, q.b);
+    const decomp = document.getElementById('decomp');
+    decomp.innerHTML = '';
 
-    const container = document.getElementById('options');
-    container.innerHTML = '';
-    for (const val of opts) {
-      const btn = document.createElement('button');
-      btn.className = 'opt-btn';
-      btn.textContent = val;
-      btn.onclick = () => pick(btn, val, q);
-      container.appendChild(btn);
-    }
+    // All steps except the last are shown as plain text
+    steps.forEach((step, i) => {
+      if (i === steps.length - 1) return; // last step = hidden answer
+      const div = document.createElement('div');
+      div.className = 'decomp-step' + (i === 0 ? ' first' : '');
+      div.textContent = (i === 0 ? '' : '= ') + step.join(' + ');
+      decomp.appendChild(div);
+    });
+
+    // Last step: hidden answer pill
+    const lastDiv = document.createElement('div');
+    lastDiv.className = 'decomp-step';
+
+    const pill = document.createElement('span');
+    pill.className = 'answer-pill';
+    pill.textContent = '?';
+    pill.addEventListener('click', () => revealAnswer(pill, q.answer), { once: true });
+
+    lastDiv.append('= ', pill);
+    decomp.appendChild(lastDiv);
   }
 
-  function pick(btn, chosen, q) {
-    if (answered) return;
-    answered = true;
-
-    const allBtns = document.querySelectorAll('.opt-btn');
-    allBtns.forEach(b => b.disabled = true);
-
-    const fb = document.getElementById('feedback');
-    if (chosen === q.answer) {
-      btn.classList.add('correct');
-      fb.textContent = 'Верно! 🎉';
-      fb.className = 'feedback ok';
-      correct++;
-    } else {
-      btn.classList.add('wrong');
-      fb.textContent = `Неверно. Правильный ответ: ${q.answer}`;
-      fb.className = 'feedback err';
-      mistakes.push(q);
-      // highlight correct
-      allBtns.forEach(b => { if (+b.textContent === q.answer) b.classList.add('correct'); });
-    }
-
-    setTimeout(nextQuestion, 900);
+  function revealAnswer(pill, answer) {
+    pill.textContent = answer;
+    pill.classList.add('revealed');
+    document.getElementById('self-check').classList.add('visible');
   }
 
-  function nextQuestion() {
+  function selfCheck(knew) {
+    if (knew) correct++;
+    else mistakes.push(questions[current]);
     current++;
-    if (current >= questions.length) {
-      showResults();
-    } else {
-      showQuestion();
-    }
+    if (current >= questions.length) showResults();
+    else showQuestion();
   }
 
   function showResults() {
@@ -403,18 +432,21 @@
     document.getElementById('results-screen').style.display = 'block';
 
     const total = questions.length;
-    const pct = Math.round((correct / total) * 100);
+    const pct   = Math.round((correct / total) * 100);
 
     document.getElementById('score-big').textContent = `${correct} / ${total}`;
-    let msg = pct === 100 ? '🏆 Отлично! Все верно!' : pct >= 80 ? '👍 Хороший результат!' : pct >= 50 ? '📚 Продолжай тренироваться!' : '💪 Нужно больше практики!';
+    const msg = pct === 100 ? '🏆 Отлично! Все знал!' :
+                pct >= 80  ? '👍 Хороший результат!' :
+                pct >= 50  ? '📚 Продолжай тренироваться!' :
+                             '💪 Нужно больше практики!';
     document.getElementById('score-sub').textContent = msg;
 
-    const mb = document.getElementById('mistakes-block');
-    const retryBtn = document.getElementById('btn-retry-mistakes');
+    const mb       = document.getElementById('mistakes-block');
+    const retryBtn = document.getElementById('btn-retry');
     if (mistakes.length > 0) {
-      mb.style.display = 'block';
+      mb.style.display       = 'block';
       retryBtn.style.display = 'block';
-      const ul = document.getElementById('mistakes-ul');
+      const ul     = document.getElementById('mistakes-ul');
       ul.innerHTML = '';
       const unique = [...new Map(mistakes.map(m => [`${m.a}x${m.b}`, m])).values()];
       for (const m of unique) {
@@ -423,7 +455,7 @@
         ul.appendChild(li);
       }
     } else {
-      mb.style.display = 'none';
+      mb.style.display       = 'none';
       retryBtn.style.display = 'none';
     }
   }
